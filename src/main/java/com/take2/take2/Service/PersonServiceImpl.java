@@ -42,6 +42,7 @@ public class PersonServiceImpl implements PersonService,UserDetailsService {
 
     @Override
     public Person savePerson(Person person) {
+
         person.setPassword(passwordEncoder.encode(person.getPassword()));
         return personRepo.save(person);
     }

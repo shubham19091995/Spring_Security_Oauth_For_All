@@ -5,13 +5,11 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.take2.take2.Info.customUser;
+import com.take2.take2.Info.repo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.HashMap;
@@ -24,6 +22,8 @@ import com.take2.take2.Service.PersonServiceImpl;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 public class MyController {
 
@@ -32,6 +32,11 @@ public class MyController {
 
     @Autowired
     private TokenUtil tokenUtil;
+
+    @Autowired
+    private repo repo;
+
+
 
     @GetMapping("/tokens/refresh")
     public void refreshTokens(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -62,6 +67,8 @@ public class MyController {
         return tokenUtil.generateTokens("shubham", user);
     }
 
+
+
     
 
     @PostMapping("/users/save")
@@ -79,6 +86,45 @@ public class MyController {
     @GetMapping("/hello")
     public String hello(){
         return "hello";
+    }
+
+
+    // custommm
+
+
+
+
+
+    @PostMapping("/add")
+    public customUser adduser(@RequestBody customUser user){
+        return repo.save(user);
+    }
+
+
+    @GetMapping("/getUser/{id}")
+    public customUser getuser(@PathVariable("id") int id){
+        return  repo.findById(id).get();
+    }
+
+    @GetMapping("/getAllUser")
+    public List<customUser> getallUser(){
+        return  repo.findAll();
+    }
+
+    @PutMapping("/updateuser")
+    public customUser updateuser(@RequestBody customUser user){
+
+        customUser data=repo.findById(user.getId()).get();
+        data.setFirstname(user.getFirstname());
+        data.setLastname(user.getLastname());
+        data.setMail(user.getMail());
+        return repo.save(data);
+
+    }
+
+    @DeleteMapping("/deleteUser/{id}")
+    public void deleteuser(@PathVariable("id") int id){
+        repo.delete(repo.findById(id).get());
     }
     
 }

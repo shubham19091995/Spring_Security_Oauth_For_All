@@ -29,6 +29,7 @@ public class securityConfig {
     private PasswordEncoder oPasswordEncoder;
 
 
+
     @Autowired
     private TokenUtil tokenUtil;
 
@@ -37,18 +38,26 @@ public class securityConfig {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authManager(), tokenUtil);
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
         http.sessionManagement().sessionCreationPolicy(STATELESS);
+
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests( auth -> {
                     auth.antMatchers("/users/save").permitAll();
+                    auth.antMatchers("/users").permitAll();
+                    auth.antMatchers("/tokencustom").permitAll();
                     auth.antMatchers("/token").permitAll();
-                    auth.antMatchers("/hello").hasAuthority("User");
+                    auth.antMatchers("/add").hasAuthority("User");
+                    auth.antMatchers("/getAllUser").hasAuthority("User");
+                    auth.antMatchers("/updateuser").hasAuthority("User");
+                    auth.antMatchers("/deleteUser/**").hasAuthority("User");
+                    auth.antMatchers("/hello").authenticated();
                     auth.antMatchers("/api/tokens/refresh").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .addFilter(customAuthenticationFilter)
-                .addFilterBefore(new CustomAuthorizationFilter(tokenUtil), UsernamePasswordAuthenticationFilter.class)
-                .build();
+                .addFilterBefore(new CustomAuthorizationFilter(tokenUtil), UsernamePasswordAuthenticationFilter.class).cors().and().build();
+
+
     }
 
     @Bean
