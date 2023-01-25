@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.take2.take2.Info.customUser;
 import com.take2.take2.Info.repo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,22 @@ public class MyController {
     public Map<String,String> gettoken(@RequestHeader String username){
         User user = (User) personService.loadUserByUsername(username);
         return tokenUtil.generateTokens("shubham", user);
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<Map<String,String>> getroles(@RequestHeader String token){
+        DecodedJWT decodedToken = tokenUtil.getDecodedToken("Bearer "+token);
+
+        String userName = decodedToken.getSubject();
+        String[] roles = decodedToken.getClaim("roles").asArray(String.class);
+        String value="";
+        for(String s:roles){
+            value=value+s+" ";
+        }
+            String v=value.substring(0,value.length()-1);
+        HashMap<String,String> ab= new HashMap<>();
+        ab.put("value",v);
+        return ResponseEntity.ok().body(ab);
     }
 
     @PostMapping("/customtoken")

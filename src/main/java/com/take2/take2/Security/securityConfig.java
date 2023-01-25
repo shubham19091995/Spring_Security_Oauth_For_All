@@ -47,6 +47,7 @@ public class securityConfig {
                 .authorizeRequests( auth -> {
                     auth.antMatchers("/users/save").permitAll();
                     auth.antMatchers("/users").permitAll();
+                    auth.antMatchers("/roles").permitAll();
                     auth.antMatchers("/customtoken").permitAll();
                     auth.antMatchers("/token").permitAll();
                     auth.antMatchers("/add").hasAuthority("User");
