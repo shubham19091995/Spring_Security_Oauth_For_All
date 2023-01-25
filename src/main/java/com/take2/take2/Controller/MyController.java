@@ -8,7 +8,12 @@ import javax.servlet.http.HttpServletResponse;
 import com.take2.take2.Info.customUser;
 import com.take2.take2.Info.repo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.userdetails.User;
 
@@ -19,6 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.take2.take2.Model.Person;
 import com.take2.take2.Security.TokenUtil;
 import com.take2.take2.Service.PersonServiceImpl;
+import org.springframework.web.client.RestTemplate;
+
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -65,6 +72,23 @@ public class MyController {
     public Map<String,String> gettoken(@RequestHeader String username){
         User user = (User) personService.loadUserByUsername(username);
         return tokenUtil.generateTokens("shubham", user);
+    }
+
+    @PostMapping("/customtoken")
+    public ResponseEntity<String> getcustomtoken(@RequestHeader String username,@RequestHeader String password){
+
+        RestTemplate restTemplate= new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        map.add("userName", username);
+        map.add("password", password);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity( "http://localhost:8080/api/login", request , String.class );
+        return  response;
     }
 
 

@@ -1,11 +1,6 @@
 package com.take2.take2.Model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 
 
 import lombok.AllArgsConstructor;
@@ -26,6 +21,6 @@ public class Person {
     private String lastName;
     private String userName;
     private String password;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private List<Role> roles = new ArrayList<>();
 }

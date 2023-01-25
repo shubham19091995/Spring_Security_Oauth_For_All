@@ -17,6 +17,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.take2.take2.Service.PersonServiceImpl;
 import com.auth0.jwt.JWT;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 @Configuration @EnableWebSecurity @RequiredArgsConstructor
@@ -37,6 +39,7 @@ public class securityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authManager(), tokenUtil);
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
+        http.cors();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
 
         return http
@@ -44,14 +47,14 @@ public class securityConfig {
                 .authorizeRequests( auth -> {
                     auth.antMatchers("/users/save").permitAll();
                     auth.antMatchers("/users").permitAll();
-                    auth.antMatchers("/tokencustom").permitAll();
+                    auth.antMatchers("/customtoken").permitAll();
                     auth.antMatchers("/token").permitAll();
                     auth.antMatchers("/add").hasAuthority("User");
                     auth.antMatchers("/getAllUser").hasAuthority("User");
                     auth.antMatchers("/updateuser").hasAuthority("User");
                     auth.antMatchers("/deleteUser/**").hasAuthority("User");
                     auth.antMatchers("/hello").authenticated();
-                    auth.antMatchers("/api/tokens/refresh").permitAll();
+
                     auth.anyRequest().authenticated();
                 })
                 .addFilter(customAuthenticationFilter)
@@ -75,5 +78,7 @@ public class securityConfig {
     public JWTVerifier verifier(){
         return JWT.require(algorithm()).build();
     }
+
+
     
 }
