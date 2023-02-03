@@ -10,6 +10,8 @@ public class Take2Application {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Take2Application.class, args);
+
+		// oauth
 	}
 
 }
